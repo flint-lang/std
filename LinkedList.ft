@@ -1,0 +1,43 @@
+use Core.assert
+
+data DLinkedListNode[type T]:
+	T value;
+	DLinkedListNode[T]? next = none;
+
+data DLinkedListHead[type T]:
+	DLinkedListNode[T]? head = none;
+
+func FLinkedList[type T] requires(DLinkedListHead[T] head):
+	def append(T value):
+		if head.head == none:
+			head.head = DLinkedListNode[T]{ .value = value };
+			return;
+
+		DLinkedListNode[T]? last = head.head;
+		while last!.next != none:
+			last = last!.next;
+		last!.next = DLinkedListNode[T]{ .value = value };
+
+	def to_string() -> str:
+		str string = "";
+		DLinkedListNode[T]? h = head.head;
+		if h != none:
+			string += str(h!.value);
+			h = h!.next;
+		while h != none:
+			string += " -> ";
+			string += str(h!.value);
+			h = h!.next;
+		return string;
+
+object LinkedList[type T]:
+	data: DLinkedListHead[T];
+	func: FLinkedList[T];
+
+test "append":
+	l := LinkedList[i32]{};
+	l.append(10);
+	l.append(20);
+	l.append(30);
+	str s = l.to_string();
+	assert(s == "10 -> 20 -> 30");
